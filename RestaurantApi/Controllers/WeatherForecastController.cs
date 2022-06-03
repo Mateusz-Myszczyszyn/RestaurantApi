@@ -43,7 +43,7 @@ namespace RestaurantApi.Controllers
                 return BadRequest();
             }
 
-            var result =Get(count, range.Min, range.Max);
+            var result = Get(count, range.Min, range.Max);
             return Ok(result);
            
         }
