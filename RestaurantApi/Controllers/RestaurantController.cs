@@ -22,6 +22,7 @@ namespace RestaurantApi.Controllers
         {
             _restaurantService = restaurantService;
         }
+        [HttpGet]
         public ActionResult<IEnumerable<RestaurantDto>> GetAll()
         {
             var restaurantsDtos = _restaurantService.GetAll();
