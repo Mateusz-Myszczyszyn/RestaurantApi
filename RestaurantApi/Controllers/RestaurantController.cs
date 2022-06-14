@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 namespace RestaurantApi.Controllers
 {
     [Route("api/restaurant")]
+    [ApiController]//self checking if model is valid(Model.isValid)
     public class RestaurantController : ControllerBase
     {
         private readonly IRestaurantService _restaurantService;
@@ -32,21 +33,12 @@ namespace RestaurantApi.Controllers
 
             var restaurant = _restaurantService.GetbyId(id);
 
-            if(restaurant is null)
-            {
-                return NotFound("Restaurant does not exist");
-            }
-
             return Ok(restaurant);
         }
 
         [HttpPost]
         public ActionResult CreateRestaurant([FromBody]CreateRestaurantDto dto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
            var id = _restaurantService.Create(dto);
            
@@ -56,29 +48,16 @@ namespace RestaurantApi.Controllers
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute]int id)
         {
-            var isDeleted = _restaurantService.Delete(id);
+            _restaurantService.Delete(id);
 
-            if (isDeleted)
-            {
-                return NoContent();
-            }
-
-            return NotFound("Restaurant u want to delete does not exist");
+            return NoContent();
         }
         [HttpPut("{id}")]
         public ActionResult Update([FromBody] UpdateRestaurantDto dto, [FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
-            var isUpdated = _restaurantService.Update(id, dto);
+            _restaurantService.Update(id, dto);
 
-            if (!isUpdated)
-            {
-                return NotFound("The restaurant u want to edit does not exist");
-            }
 
             return Ok();
         }
