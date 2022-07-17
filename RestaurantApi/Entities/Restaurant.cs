@@ -21,6 +21,8 @@ namespace RestaurantApi.Entities
         public string ContactEmail { get; set; }
 
         public string ContactNumber { get; set; }
+        public int? CreatedById { get; set; }
+        public virtual User CreatedBy { get; set; }
 
         public int AddressId { get; set; }
 
