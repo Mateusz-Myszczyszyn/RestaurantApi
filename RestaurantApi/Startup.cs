@@ -62,7 +62,9 @@ namespace RestaurantApi
             {
                 options.AddPolicy("HasNationality",builder=>builder.RequireClaim("Nationality","German","Polish"));
                 options.AddPolicy("Atleast20",builder=>builder.AddRequirements(new MinimumAgeRequirement(20)));
+                options.AddPolicy("CreatedAtleast2Restaurants", builder => builder.AddRequirements(new CreatedMultipleRestaurantsRequirement(2)));
             });
+            services.AddScoped<IAuthorizationHandler, CreatedMultipleRestaurantsRequirementHandler>();//personal authorization connected with policy CreatedAtleast2Restaurants
             services.AddScoped<IAuthorizationHandler, MinimumAgeRequirementHandler>();//personal authorization connected with policy atleast20
             services.AddScoped<IAuthorizationHandler, ResourceOperationRequirementHandler>();
             services.AddControllers().AddFluentValidation() ;
@@ -76,6 +78,8 @@ namespace RestaurantApi
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
             services.AddScoped<IValidator<RegisterUserDto>,RegisterUserDtoValidator>();
             services.AddScoped<RequestTimeMiddleware>();
+            services.AddScoped<IUserContextService, UserContextService>();
+            services.AddHttpContextAccessor();
             services.AddSwaggerGen();
         }
 
