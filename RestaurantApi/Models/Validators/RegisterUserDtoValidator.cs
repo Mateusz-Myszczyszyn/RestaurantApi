@@ -17,7 +17,7 @@ namespace RestaurantApi.Models.Validators
                 .EmailAddress();
 
             RuleFor(x => x.Password).MinimumLength(6);
-
+ 
             RuleFor(x => x.ConfirmPassword).Equal(e => e.Password);
 
             RuleFor(x => x.Email)
