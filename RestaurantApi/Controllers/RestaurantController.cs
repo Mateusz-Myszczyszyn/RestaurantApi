@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RestaurantApi.Entities;
@@ -7,6 +8,7 @@ using RestaurantApi.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,6 +16,7 @@ namespace RestaurantApi.Controllers
 {
     [Route("api/restaurant")]
     [ApiController]//self checking if model is valid(Model.isValid)
+    [Authorize]
     public class RestaurantController : ControllerBase
     {
         private readonly IRestaurantService _restaurantService;
@@ -23,6 +26,7 @@ namespace RestaurantApi.Controllers
             _restaurantService = restaurantService;
         }
         [HttpGet]
+        [Authorize(Policy ="Atleast20")]
         public ActionResult<IEnumerable<RestaurantDto>> GetAll()
         {
             var restaurantsDtos = _restaurantService.GetAll();
@@ -30,6 +34,7 @@ namespace RestaurantApi.Controllers
             return Ok(restaurantsDtos);
         }
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public ActionResult<RestaurantDto> Get([FromRoute] int id)
         {
 
@@ -39,10 +44,12 @@ namespace RestaurantApi.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles ="Admin,Manager")]
+        //[Authorize(Roles ="Manager")]
         public ActionResult CreateRestaurant([FromBody]CreateRestaurantDto dto)
         {
-
-           var id = _restaurantService.Create(dto);
+           var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
+           var id = _restaurantService.Create(dto,userId);
            
             return Created($"/api/restaurant/{id}",null);
         }
@@ -50,7 +57,7 @@ namespace RestaurantApi.Controllers
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute]int id)
         {
-            _restaurantService.Delete(id);
+            _restaurantService.Delete(id,User);
 
             return NoContent();
         }
@@ -58,7 +65,7 @@ namespace RestaurantApi.Controllers
         public ActionResult Update([FromBody] UpdateRestaurantDto dto, [FromRoute] int id)
         {
 
-            _restaurantService.Update(id, dto);
+            _restaurantService.Update(id, dto, User);
 
 
             return Ok();
