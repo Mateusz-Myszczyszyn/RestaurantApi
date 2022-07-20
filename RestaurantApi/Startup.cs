@@ -87,7 +87,7 @@ namespace RestaurantApi
                 options.AddPolicy("FrontEndClient", builder =>
                 builder.AllowAnyMethod()
                        .AllowAnyHeader()
-                       .WithOrigins("http://localhost:8080"));
+                       .WithOrigins(Configuration["AllowedOrigins"]));
             });
         }
 
