@@ -16,7 +16,7 @@ namespace RestaurantApi.Controllers
 {
     [Route("api/restaurant")]
     [ApiController]//self checking if model is valid(Model.isValid)
-    [Authorize]
+    //[Authorize]
     public class RestaurantController : ControllerBase
     {
         private readonly IRestaurantService _restaurantService;
@@ -27,15 +27,15 @@ namespace RestaurantApi.Controllers
         }
         [HttpGet]
         //[Authorize(Policy ="Atleast20")]
-        [Authorize(Policy ="CreatedAtleast2Restaurants")]
-        public ActionResult<IEnumerable<RestaurantDto>> GetAll()
+        //[Authorize(Policy ="CreatedAtleast2Restaurants")]
+        public ActionResult<IEnumerable<RestaurantDto>> GetAll([FromQuery]RestaurantQuery query)
         {
-            var restaurantsDtos = _restaurantService.GetAll();
+            var restaurantsDtos = _restaurantService.GetAll(query);
 
             return Ok(restaurantsDtos);
         }
         [HttpGet("{id}")]
-        [AllowAnonymous]
+        //[AllowAnonymous]
         public ActionResult<RestaurantDto> Get([FromRoute] int id)
         {
 
@@ -45,7 +45,7 @@ namespace RestaurantApi.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles ="Admin,Manager")]
+        //[Authorize(Roles ="Admin,Manager")]
         //[Authorize(Roles ="Manager")]
         public ActionResult CreateRestaurant([FromBody]CreateRestaurantDto dto)
         {
