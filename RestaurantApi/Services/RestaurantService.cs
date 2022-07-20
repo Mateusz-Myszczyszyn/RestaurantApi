@@ -9,6 +9,7 @@ using RestaurantApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,17 +49,46 @@ namespace RestaurantApi.Services
 
         }
 
-        public IEnumerable<RestaurantDto> GetAll()
+        public PagedResult<RestaurantDto> GetAll(RestaurantQuery query)
         {
-            var restaurants = _dbContext
+
+            var baseQuery = _dbContext
                 .Restaurants
                 .Include(r => r.Address)
                 .Include(r => r.Dishes)
+                .Where(r => query.SearchPhrase == null || (r.Name.ToLower().Contains(query.SearchPhrase.ToLower())
+                                                || r.Description.ToLower().Contains(query.SearchPhrase.ToLower())));
+
+            if (!string.IsNullOrEmpty(query.SortBy))
+            {
+                var columnsSelector = new Dictionary<string, Expression<Func<Restaurant, object>>>
+                {
+                    {nameof(Restaurant.Name), r=>r.Name },
+                    {nameof(Restaurant.Description), r=>r.Description },
+                    {nameof(Restaurant.Category), r=>r.Category },
+                };
+
+                var selectedColumn = columnsSelector[query.SortBy];
+
+                baseQuery = query.SortDirection == SortDirection.ASC 
+                    ? baseQuery.OrderBy(selectedColumn)
+                    : baseQuery.OrderByDescending(selectedColumn);
+            }
+            
+            var restaurants = baseQuery
+                .Skip(query.PageSize * (query.PageNumber - 1))
+                .Take(query.PageSize)
                 .ToList();
+
+            var totalItemsCount = baseQuery.Count();
+
+
 
             var restaurantsDto = _mapper.Map<List<RestaurantDto>>(restaurants);
 
-            return restaurantsDto;
+            var results = new PagedResult<RestaurantDto>(restaurantsDto, totalItemsCount, query.PageSize, query.PageNumber);
+
+            return results;
         }
 
         public int Create(CreateRestaurantDto dto)
