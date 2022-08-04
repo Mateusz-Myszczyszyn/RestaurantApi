@@ -18,7 +18,7 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
       - name: Build
-        run: dotney build --no-restore
+        run: dotnet build --no-restore
       - name: Test
         run: dotnet test
         
