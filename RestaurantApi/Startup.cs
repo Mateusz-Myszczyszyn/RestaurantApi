@@ -41,7 +41,7 @@ namespace RestaurantApi
         {
 
             var authenticationSettings = new AuthenticationSettings();
-            Configuration.GetSection("Authentication").Bind(authenticationSettings);
+            Configuration.GetSection("Authentication").Bind(authenticationSettings);xddddd
             services.AddSingleton(authenticationSettings);
             services.AddAuthentication(option =>
             {
