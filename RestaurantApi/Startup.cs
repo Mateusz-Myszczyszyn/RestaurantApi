@@ -40,7 +40,7 @@ namespace RestaurantApi
         public void ConfigureServices(IServiceCollection services)
         {
 
-            var authenticationSettings = new AuthenticationSettings();
+            var authenticationSettingsJOJO = new AuthenticationSettings();
             Configuration.GetSection("Authentication").Bind(authenticationSettings);
             services.AddSingleton(authenticationSettings);
             services.AddAuthentication(option =>
